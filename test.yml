@@ -1,0 +1,6 @@
+---
+- hosts: node1
+  gather_facts: no
+  tasks:
+  - name: shell test  
+    shell: echo "abc test" > ~/log.log

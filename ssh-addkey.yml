@@ -1,0 +1,8 @@
+---
+- hosts: all
+  gather_facts: no
+  tasks:
+  - name: install ssh key
+    authorized_key: user=root
+                    key="{{ lookup('file', '/home/wengmd/.ssh/id_rsa.pub') }}"
+                    state=present

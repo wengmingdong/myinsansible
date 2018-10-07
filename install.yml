@@ -1,0 +1,13 @@
+---
+- hosts: localhost
+  vars:
+    - myk8node:
+      - name: "192.168.57.11"
+      - name: "192.168.57.12"
+  roles:
+    - local-cfssls
+
+- hosts: k8node
+  roles:
+    - cfssls
+    - etcds

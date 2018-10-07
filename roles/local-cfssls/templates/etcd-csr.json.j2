@@ -1,0 +1,22 @@
+{
+  "CN": "etcd",
+  "hosts": [
+    {% for item in myk8node%}
+    "{{ item.name}}"{% if not loop.last %},{% endif %}
+
+    {% endfor %}
+  ],
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "CN",
+      "ST": "ShenZhen",
+      "L": "ShenZhen",
+      "O": "k8s",
+      "OU": "System"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+---
+# tasks file for cfssls
+- name: creates directory
+  file:
+    path: "/opt/local/cfssl"
+    state: directory
+    mode: 0775
+    recurse: yes
+- name: copy file
+  copy: 
+    src: "{{ role_path }}/files/{{ item.file }}"
+    dest: "/opt/local/cfssl"
+    mode: 0775
+  with_items:
+  - {file: "cfssl"}
+  - {file: "cfssl-certinfo"}
+  - {file: "cfssljson"}
+- name: creates ca directory
+  file:
+    path: "/opt/ssl"
+    state: directory
+    mode: 0775
+    recurse: yes
+- name: copy config.json
+  copy: 
+    src: "{{ role_path }}/files/{{ item.file }}"
+    dest: "/opt/ssl/"
+  with_items:
+  - {file: "config.json"}
+  - {file: "csr.json"}
+- name: create ca 
+  shell: "{{ item.cmd }}"
+  args:
+    chdir: /opt/ssl/
+    executable: /bin/bash
+  with_items:
+  #- {cmd: "/opt/local/cfssl/cfssl print-defaults config > config.json"}
+  #- {cmd: "/opt/local/cfssl/cfssl print-defaults csr > csr.json"}
+  - {cmd: "/opt/local/cfssl/cfssl gencert -initca csr.json | /opt/local/cfssl/cfssljson -bare ca"}
+- name: create dir /etc/kubernetes/ssl
+  file:
+    path: "/etc/kubernetes/ssl"
+    state: directory
+    recurse: yes
+- name: etcd-csr.json.j2
+  template:
+    src: etcd-csr.json.j2
+    dest: /opt/ssl/etcd-csr.json
+- name: create etcd key
+  shell: "/opt/local/cfssl/cfssl gencert -ca=/opt/ssl/ca.pem -ca-key=/opt/ssl/ca-key.pem -config=/opt/ssl/config.json -profile=kubernetes etcd-csr.json | /opt/local/cfssl/cfssljson -bare etcd"
+  args:
+    chdir: /opt/ssl/
+    executable: /bin/bash
+- name: copy ssl to /etc/kubernetes/ssl
+  copy:
+    src: "/opt/ssl/"
+    dest: "/etc/kubernetes/ssl"

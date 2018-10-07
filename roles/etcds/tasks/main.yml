@@ -1,0 +1,8 @@
+---
+# tasks file for etcds
+- name: install etcd
+  yum: name=etcd state=present
+- name: cp etcd.service
+  template:
+    src: etcd.service.j2
+    dest: /tmp/etcd.service

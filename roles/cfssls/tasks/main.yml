@@ -1,0 +1,12 @@
+---
+# tasks file for cfssls
+- name: create dir /etc/kubernetes/ssl
+  file:
+    path: "/etc/kubernetes/ssl"
+    state: directory
+    recurse: yes
+- name: copy ssl to /etc/kubernetes/ssl
+  copy: 
+    src: "/etc/kubernetes/ssl/"
+    dest: "/etc/kubernetes/ssl"
+    mode: 0644
