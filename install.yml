@@ -1,13 +1,13 @@
 ---
 - hosts: localhost
-  vars:
-    - myk8node:
-      - name: "192.168.57.11"
-      - name: "192.168.57.12"
+  vars_files:
+    - myvar.yml
   roles:
     - local-cfssls
 
 - hosts: k8node
+  vars_files:
+    - myvar.yml
   roles:
     - cfssls
     - etcds
