@@ -28,6 +28,8 @@
   with_items:
   - {file: "config.json"}
   - {file: "csr.json"}
+  - {file: "admin-csr.json"}
+  - {file: "token.csv"}
 - name: create ca 
   shell: "{{ item.cmd }}"
   args:
@@ -42,7 +44,8 @@
     path: "/etc/kubernetes/ssl"
     state: directory
     recurse: yes
-- name: etcd-csr.json.j2
+
+- name: cp etcd-csr.json.j2
   template:
     src: etcd-csr.json.j2
     dest: /opt/ssl/etcd-csr.json
@@ -51,7 +54,29 @@
   args:
     chdir: /opt/ssl/
     executable: /bin/bash
+- name: create admin cert
+  shell: "/opt/local/cfssl/cfssl gencert -ca=/etc/kubernetes/ssl/ca.pem -ca-key=/etc/kubernetes/ssl/ca-key.pem -config=/etc/kubernetes/ssl/config.json -profile=kubernetes admin-csr.json | /opt/local/cfssl/cfssljson -bare admin"
+  args:
+    chdir: /opt/ssl/
+    executable: /bin/bash
+
+- name: cp kubernetes-csr.json.j2
+  template:
+    src: kubernetes-csr.json.j2
+    dest: /opt/ssl/kubernetes-csr.json
+- name: create kubernetes cert
+  shell: "/opt/local/cfssl/cfssl gencert -ca=/etc/kubernetes/ssl/ca.pem -ca-key=/etc/kubernetes/ssl/ca-key.pem -config=/etc/kubernetes/ssl/config.json -profile=kubernetes kubernetes-csr.json | /opt/local/cfssl/cfssljson -bare kubernetes"
+  args:
+    chdir: /opt/ssl/
+    executable: /bin/bash
+
 - name: copy ssl to /etc/kubernetes/ssl
   copy:
     src: "/opt/ssl/"
     dest: "/etc/kubernetes/ssl"
+    rsync_opts: "token.csv"
+- name: copy token
+  copy:
+    src: "/opt/ssl/token.csv"
+    dest: "/etc/kubernetes/token.csv"
+    mode: 0644

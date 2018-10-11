@@ -1,2 +1,6 @@
 ---
 # handlers file for etcds
+- name: reload systemd etcd
+  command: systemctl daemon-reload
+- name: etcd restart
+  service: name=etcd state=restarted

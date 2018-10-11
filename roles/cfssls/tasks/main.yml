@@ -10,3 +10,8 @@
     src: "/etc/kubernetes/ssl/"
     dest: "/etc/kubernetes/ssl"
     mode: 0644
+- name: copy token
+  copy:
+    src: "/etc/kubernetes/token.csv"
+    dest: "/etc/kubernetes/token.csv"
+    mode: 0644

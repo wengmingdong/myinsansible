@@ -1,0 +1,46 @@
+---
+# handlers file for kube
+- name: kube-apiserver reload
+  command: systemctl daemon-reload
+- name: kube-apiserver enable
+  service:
+    name: kube-apiserver
+    enabled: yes
+- name : kube-apiserver start
+  service:
+    name: kube-apiserver
+    state: started
+- name: kube-apiserver restart
+  service: 
+    name: kube-apiserver
+    state: restarted
+
+- name: kube-controller-manager.service reload
+  command: systemctl daemon-reload
+- name: kube-controller-manager.service enable
+  service:
+    name: kube-controller-manager.service
+    enabled: yes
+- name: kube-controller-manager.service start
+  service:
+    name: kube-controller-manager.service
+    state: started
+- name: kube-controller-manager.service restart
+  service:
+    name: kube-controller-manager.service
+    state: restarted
+
+- name: kube-scheduler.service reload
+  command: systemctl daemon-reload
+- name: kube-scheduler.service enable
+  service:
+    name: kube-scheduler.service
+    enabled: yes
+- name: kube-scheduler.service start
+  service:
+    name: kube-scheduler.service
+    state: started
+- name: kube-scheduler.service restart
+  service:
+    name: kube-scheduler.service
+    state: restarted

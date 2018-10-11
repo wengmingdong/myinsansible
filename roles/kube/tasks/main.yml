@@ -1,0 +1,78 @@
+---
+# tasks file for kube
+- name: copy kubectl /usr/local/bin/
+  copy: 
+    src: "/root/k8files/kubernetes/client/bin/"
+    dest: "/usr/local/bin"
+    mode: 0755
+- name: config k8s cluster
+  shell: "kubectl config set-cluster kubernetes --certificate-authority=/etc/kubernetes/ssl/ca.pem --embed-certs=true --server=https://{{ ansible_host }}:6443"
+  args: 
+    executable: /bin/bash
+- name: config client credentials
+  shell: "kubectl config set-credentials admin --client-certificate=/etc/kubernetes/ssl/admin.pem --embed-certs=true --client-key=/etc/kubernetes/ssl/admin-key.pem"
+  args:
+    executable: /bin/bash
+- name: config client credentials1
+  shell: "kubectl config set-context kubernetes --cluster=kubernetes --user=admin"
+  args:
+    executable: /bin/bash
+- name: config client credentials2
+  shell: "kubectl config use-context kubernetes"
+  args:
+    executable: /bin/bash
+  notify:
+    - kube-apiserver reload
+    - kube-apiserver enable
+    - kube-apiserver start
+    - kube-apiserver restart
+    - kube-controller-manager.service reload
+    - kube-controller-manager.service enable
+    - kube-controller-manager.service start
+    - kube-controller-manager.service restart
+
+- name: copy kubernetes-server
+  copy:
+    src: "/root/k8files/kubernetes/server/bin/{{ item.file }}"
+    dest: "/usr/local/bin/"
+    mode: 0755
+  with_items:
+  - {file: "kube-apiserver"}
+  - {file: "kube-controller-manager"}
+  - {file: "kube-scheduler"}
+  - {file: "kubectl"}
+  - {file: "kube-proxy"}
+  - {file: "kubelet"}
+
+- name: cp kube-apiserver.service
+  template:
+    src: kube-apiserver.service.j2
+    dest: /etc/systemd/system/kube-apiserver.service
+    mode: 0755
+  notify:
+    - kube-apiserver reload
+    - kube-apiserver enable
+    - kube-apiserver start
+    - kube-apiserver restart
+
+- name: cp kube-controller-manager.service
+  template:
+    src: kube-controller-manager.service.j2
+    dest: /etc/systemd/system/kube-controller-manager.service
+    mode: 0755
+  notify:
+    - kube-controller-manager.service reload
+    - kube-controller-manager.service enable
+    - kube-controller-manager.service start
+    - kube-controller-manager.service restart
+
+- name: cp kube-scheduler.service
+  template:
+    src: kube-scheduler.service.j2
+    dest: /etc/systemd/system/kube-scheduler.service
+    mode: 0755
+  notify:
+    - kube-scheduler.service reload
+    - kube-scheduler.service enable
+    - kube-scheduler.service start
+    - kube-scheduler.service restart

@@ -5,4 +5,11 @@
 - name: cp etcd.service
   template:
     src: etcd.service.j2
-    dest: /tmp/etcd.service
+    dest: /usr/lib/systemd/system/etcd.service
+    mode: 0755
+  notify: 
+    - reload systemd etcd
+    - etcd restart   
+- name: etcd enable
+  service: name=etcd enabled=yes
+  
