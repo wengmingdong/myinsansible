@@ -1,0 +1,12 @@
+---
+- hosts: localhost
+  vars_files:
+    - myvar.yml
+  roles:
+    - reset_locals
+
+- hosts: k8node
+  vars_files:
+    - myvar.yml
+  roles:
+    - resets

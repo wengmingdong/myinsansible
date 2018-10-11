@@ -1,0 +1,14 @@
+---
+# tasks file for reset_locals
+- name: rm cert /opt/local/cfssl
+  file:
+    path: "/opt/local/cfssl"
+    state: absent
+- name: rm cert /opt/ssl
+  file:
+    path: "/opt/ssl"
+    state: absent
+- name: rm cert /etc/kubernetes
+  file:
+    path: "/etc/kubernetes"
+    state: absent

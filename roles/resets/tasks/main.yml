@@ -1,0 +1,39 @@
+---
+# tasks file for resets
+- name: kube stop
+  service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: no
+  ignore_errors: yes
+  with_items:
+    - "kube-scheduler.service"
+    - "kube-controller-manager.service"
+    - "kube-apiserver.service"
+
+- name: kube del
+  file:
+    path: "/etc/systemd/system/{{ item }}"
+    state: absent
+  with_items:
+    - "kube-scheduler.service"
+    - "kube-controller-manager.service"
+    - "kube-apiserver.service"
+
+- name: etcd stop
+  service:
+    name: etcd.service
+    state: stopped
+    enabled: no
+  ignore_errors: yes
+- name: etcd del 
+  yum: name=etcd state=absent
+- name: etcd service del
+  file:
+    path: "/etc/systemd/system/etcd.service"
+    state: absent
+
+- name: cert del
+  file:
+    path: "/etc/kubernetes"
+    state: absent
